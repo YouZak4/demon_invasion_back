@@ -1,6 +1,6 @@
 package com.demon_invasion.backend.service;
 
-import com.demon_invasion.backend.model.Utilisateur;
+import com.demon_invasion.backend.model.entities.Utilisateur;
 import com.demon_invasion.backend.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

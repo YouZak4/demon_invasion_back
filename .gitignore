@@ -34,3 +34,5 @@ build/
 
 ### Git ###
 .gitattributes
+
+src/main/resources/application.properties

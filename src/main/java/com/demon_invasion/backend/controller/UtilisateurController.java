@@ -1,6 +1,6 @@
 package com.demon_invasion.backend.controller;
 
-import com.demon_invasion.backend.model.Utilisateur;
+import com.demon_invasion.backend.model.entities.Utilisateur;
 import com.demon_invasion.backend.service.UtilisateurService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
