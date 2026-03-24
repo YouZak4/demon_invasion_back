@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+/**
+ * Implémentation de la classe UserDetailsService
+ * Spring Security ne connaît pas l'objet Utilisateur.
+ * Spring Security fonctionne avec l'interface UserDetails.
+ * Cette classe permet de faire le pont entre Spring security et la base de données.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {

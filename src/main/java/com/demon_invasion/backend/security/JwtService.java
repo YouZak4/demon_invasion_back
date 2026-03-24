@@ -29,7 +29,7 @@ public class JwtService {
     }
 
     // Génère un token pour un utilisateur
-    public String genererToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
         String roles = userDetails.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
