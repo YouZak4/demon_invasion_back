@@ -17,7 +17,6 @@ public class Role {
     private Long id;
 
     @Getter
-    @Setter
     @Column(unique = true, nullable = false)
     private String nom;
 }

@@ -6,8 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
-// Spring Data JPA fournit findAll(), findById(), save(), delete()... automatiquement
+    Optional<Utilisateur> findByIdentifiant(String identifiant);
+
+    boolean existsByIdentifiant(String identifiant);
+
     Optional<Utilisateur> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }
 
 

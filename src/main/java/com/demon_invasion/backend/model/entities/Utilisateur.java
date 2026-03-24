@@ -1,7 +1,10 @@
 package com.demon_invasion.backend.model.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -11,35 +14,26 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class Utilisateur {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     @Setter
     @Column(nullable = false)
     private String pseudo;
-
-    @Getter
-    @Setter
+    
     @Column(nullable = false)
     private String identifiant;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String motDePasse;
 
-    @Getter
     @Setter
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Getter
     @Setter
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "utilisateur_roles",
