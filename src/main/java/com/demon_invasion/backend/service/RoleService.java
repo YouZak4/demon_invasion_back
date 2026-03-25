@@ -13,6 +13,12 @@ public class RoleService {
 
     private final RoleRepository roleRepository;
 
+    /**
+     * Retourne le role qui correspond au nom en paramètre.
+     *
+     * @param nom le nom du role
+     * @return le role
+     */
     public Optional<Role> findByNom(String nom) {
         return roleRepository.findByNom(nom);
     }

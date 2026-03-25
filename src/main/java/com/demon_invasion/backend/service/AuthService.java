@@ -1,15 +1,24 @@
 package com.demon_invasion.backend.service;
 
+import com.demon_invasion.backend.model.dto.DtoAuthenticated;
+import com.demon_invasion.backend.model.dto.DtoLogin;
 import com.demon_invasion.backend.model.dto.DtoRegister;
 import com.demon_invasion.backend.model.dto.DtoUtilisateur;
 import com.demon_invasion.backend.model.entities.Role;
 import com.demon_invasion.backend.model.entities.Utilisateur;
+import com.demon_invasion.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +38,18 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final AuthenticationManager authenticationManager;
+
+    private final UserDetailsService userDetailsService;
+
+    private final JwtService jwtService;
+
+    /**
+     * Cette méthode permet à un utilisateur de créer son compte.
+     *
+     * @param dtoRegister contient les informations saisis par l'utilisateur
+     * @return une DTO contenant les informations de l'utilisateur
+     */
     public DtoUtilisateur register(DtoRegister dtoRegister) {
         if (utilisateurService.existsByPseudo(dtoRegister.getPseudo())) {
             throw new RuntimeException(PSEUDO_ALREADY_EXISTS);
@@ -45,14 +66,48 @@ public class AuthService {
 
         DtoUtilisateur dtoUtilisateur = new DtoUtilisateur();
         BeanUtils.copyProperties(utilisateur, dtoUtilisateur);
+
         return dtoUtilisateur;
     }
 
+    /**
+     * Cette méthode permet de sauvegardé en base de données les informations de connexion de l'utilisateur.
+     *
+     * @param dtoRegister     Contient les informations de connexion de l'utilisateur
+     * @param roleUtilisateur Contient le role de l'utilisateur qui ce connecte à l'application
+     * @return un DTO contenant les informations de l'utilisateur
+     */
     private Utilisateur setUtilisateurForRegistration(DtoRegister dtoRegister, Role roleUtilisateur) {
         Utilisateur utilisateur = new Utilisateur();
         BeanUtils.copyProperties(dtoRegister, utilisateur);
         utilisateur.setMotDePasse(passwordEncoder.encode(dtoRegister.getMotDePasse())); // hash du mdp
         utilisateur.setRoles(Set.of(roleUtilisateur));
         return utilisateur;
+    }
+
+
+    /**
+     * Cette méthode permet à l'utilisateur de ce connecter à l'application
+     *
+     * @param request les informations de connexion de l'utilisateur
+     * @return un token de connexion
+     */
+    public DtoAuthenticated login(DtoLogin request) {
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                        request.getIdentifiant(),
+                        request.getMotDePasse()
+                )
+        );
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getIdentifiant());
+
+        String token = jwtService.generateToken(userDetails);
+
+        Set<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        return new DtoAuthenticated(token, request.getIdentifiant(), roles);
     }
 }
