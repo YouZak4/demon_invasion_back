@@ -1,16 +1,23 @@
 package com.demon_invasion.backend.controller;
 
-import com.demon_invasion.backend.model.dto.*;
-import com.demon_invasion.backend.model.entities.*;
-import com.demon_invasion.backend.repository.*;
-import com.demon_invasion.backend.security.*;
+import com.demon_invasion.backend.model.dto.DtoAuthenticated;
+import com.demon_invasion.backend.model.dto.DtoLogin;
+import com.demon_invasion.backend.model.dto.DtoRegister;
+import com.demon_invasion.backend.model.dto.DtoUtilisateur;
+import com.demon_invasion.backend.security.JwtService;
+import com.demon_invasion.backend.security.UserDetailsServiceImpl;
+import com.demon_invasion.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,9 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UtilisateurRepository utilisateurRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtService jwtService;
@@ -32,31 +37,13 @@ public class AuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody DtoRegister request) {
-
-        if (utilisateurRepository.existsByIdentifiant(request.getIdentifiant())) {
-            return ResponseEntity.badRequest().body("Identifiant déjà utilisé.");
-        }
-        if (utilisateurRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("Email déjà utilisé.");
-        }
-
-        // Récupère le rôle ROLE_UTILISATEUR (doit exister en BDD)
-        Role roleUtilisateur = roleRepository.findByNom("ROLE_UTILISATEUR")
-                .orElseThrow(() -> new RuntimeException("Rôle ROLE_UTILISATEUR introuvable en BDD"));
-
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setPseudo(request.getPseudo());
-        utilisateur.setIdentifiant(request.getIdentifiant());
-        utilisateur.setEmail(request.getEmail());
-        utilisateur.setMotDePasse(passwordEncoder.encode(request.getMotDePasse())); // hash du mdp
-        utilisateur.setRoles(Set.of(roleUtilisateur));
-
-        utilisateurRepository.save(utilisateur);
-
-        return ResponseEntity.ok("Inscription réussie.");
+        DtoUtilisateur dtoUtilisateur = authService.register(request);
+        return ResponseEntity.ok("Inscription réussie.", dtoUtilisateur);
     }
 
-    // ── CONNEXION ─────────────────────────────────────────────────
+    /**
+     * Connexion
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody DtoLogin request) {
         try {

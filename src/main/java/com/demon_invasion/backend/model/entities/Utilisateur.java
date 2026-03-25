@@ -21,9 +21,9 @@ public class Utilisateur {
     private Long id;
 
     @Setter
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String pseudo;
-    
+
     @Column(nullable = false)
     private String identifiant;
 
