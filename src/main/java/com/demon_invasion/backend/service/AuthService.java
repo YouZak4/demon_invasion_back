@@ -1,24 +1,24 @@
 package com.demon_invasion.backend.service;
 
-import com.demon_invasion.backend.model.dto.DtoAuthenticated;
+import com.demon_invasion.backend.exception.InvalidCredentialsException;
 import com.demon_invasion.backend.model.dto.DtoLogin;
 import com.demon_invasion.backend.model.dto.DtoRegister;
 import com.demon_invasion.backend.model.dto.DtoUtilisateur;
 import com.demon_invasion.backend.model.entities.Role;
 import com.demon_invasion.backend.model.entities.Utilisateur;
+import com.demon_invasion.backend.security.CustomUserDetailsService;
 import com.demon_invasion.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +34,13 @@ public class AuthService {
 
     private final UtilisateurService utilisateurService;
 
+    private final CustomUserDetailsService userDetailsService;
+
     private final RoleService roleService;
 
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
-
-    private final UserDetailsService userDetailsService;
 
     private final JwtService jwtService;
 
@@ -92,22 +92,18 @@ public class AuthService {
      * @param request les informations de connexion de l'utilisateur
      * @return un token de connexion
      */
-    public DtoAuthenticated login(DtoLogin request) {
+    public String login(DtoLogin request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getIdentifiant(), request.getMotDePasse())
+            );
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                        request.getIdentifiant(),
-                        request.getMotDePasse()
-                )
-        );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getIdentifiant());
+            return jwtService.generateToken(authentication);
 
-        String token = jwtService.generateToken(userDetails);
-
-        Set<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
-
-        return new DtoAuthenticated(token, request.getIdentifiant(), roles);
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Pseudo ou mot de passe incorrect.");
+        }
     }
 }

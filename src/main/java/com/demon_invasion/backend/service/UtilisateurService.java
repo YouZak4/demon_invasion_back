@@ -16,6 +16,7 @@ public class UtilisateurService {
 
     /**
      * Retourne tous les utilisateurs contenus en base de données.
+     *
      * @return une liste d'utilisateurs
      */
     public List<Utilisateur> getAllUtilisateurs() {
@@ -24,6 +25,7 @@ public class UtilisateurService {
 
     /**
      * Retourne l'utilisateur à qui appartient l'identifiant en paramètre.
+     *
      * @param identifiant identifiant de l'utilisateur
      * @return un utilisateur
      */
@@ -33,6 +35,7 @@ public class UtilisateurService {
 
     /**
      * Vérifie si le pseudo en paramètre existe en base de donnée.
+     *
      * @param pseudo pseudo de l'utilisateur
      * @return un boolean
      */
@@ -42,6 +45,7 @@ public class UtilisateurService {
 
     /**
      * Retourne l'utilisateur à qui appartient le mail en paramètre.
+     *
      * @param email l'email de l'utilisateur
      * @return un utilisateur
      */
@@ -51,6 +55,7 @@ public class UtilisateurService {
 
     /**
      * Vérifie si le mail en paramètre existe en base de donnée.
+     *
      * @param email l'email de l'utilisateur
      * @return un boolean
      */
@@ -60,6 +65,7 @@ public class UtilisateurService {
 
     /**
      * Permet de sauvegarder un utilisateur en base de donnée.
+     *
      * @param utilisateur l'utilisateur à sauvegarder
      * @return l'utilisateur sauvegardé
      */

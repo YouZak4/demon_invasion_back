@@ -1,6 +1,5 @@
 package com.demon_invasion.backend.controller;
 
-import com.demon_invasion.backend.model.dto.DtoAuthenticated;
 import com.demon_invasion.backend.model.dto.DtoLogin;
 import com.demon_invasion.backend.model.dto.DtoRegister;
 import com.demon_invasion.backend.model.dto.DtoUtilisateur;
@@ -8,7 +7,6 @@ import com.demon_invasion.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +22,6 @@ public class AuthController {
     /**
      * Inscription
      */
-    @PreAuthorize("hasRole('ADMINISTRATEUR')('UTILISATEUR')")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody DtoRegister request) {
         DtoUtilisateur dtoUtilisateur = authService.register(request);
@@ -34,10 +31,9 @@ public class AuthController {
     /**
      * Connexion
      */
-    @PreAuthorize("hasRole('ADMINISTRATEUR')('UTILISATEUR')")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody DtoLogin request) {
-        DtoAuthenticated dtoAuthenticated = authService.login(request);
-        return ResponseEntity.status(HttpStatus.OK).body(dtoAuthenticated);
+        String token = authService.login(request);
+        return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 }

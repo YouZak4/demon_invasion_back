@@ -1,16 +1,19 @@
 package com.demon_invasion.backend.security;
 
+import com.demon_invasion.backend.model.CustomUserDetails;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.List;
 
 //Génère et valide les tokens
 @Service
@@ -29,14 +32,19 @@ public class JwtService {
     }
 
     // Génère un token pour un utilisateur
-    public String generateToken(UserDetails userDetails) {
-        String roles = userDetails.getAuthorities()
-                .stream()
+    public String generateToken(Authentication authentication) {
+        if (!(authentication.getPrincipal() instanceof CustomUserDetails userPrincipal)) {
+            throw new IllegalArgumentException("Principal is not CustomUserDetails");
+        }
+
+        List<String> roles = userPrincipal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+                .toList();
+
+        Instant now = Instant.now();
 
         return Jwts.builder()
-                .subject(userDetails.getUsername())                             // identifiant dans le token
+                .subject(userPrincipal.getUsername())                             // identifiant dans le token
                 .claim("roles", roles)                                    // rôles dans le payload
                 .issuedAt(new Date())                                           // date de création
                 .expiration(new Date(System.currentTimeMillis() + expiration))  // date d'expiration
