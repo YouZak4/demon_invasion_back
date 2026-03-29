@@ -24,7 +24,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
 
     @Override
@@ -52,7 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Si on a un identifiant et que l'utilisateur n'est pas déjà authentifié
         if (identifiant != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(identifiant);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(identifiant);
 
             if (jwtService.isTokenValid(token, userDetails)) {
                 // On crée le token d'authentification Spring Security

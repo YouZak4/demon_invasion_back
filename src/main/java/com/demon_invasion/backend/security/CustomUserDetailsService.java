@@ -24,8 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     @NullMarked
-    public UserDetails loadUserByUsername(String pseudo) throws UsernameNotFoundException {
-        Utilisateur utilisateur = utilisateurRepository.findByPseudo(pseudo)
+    public UserDetails loadUserByUsername(String identifiant) throws UsernameNotFoundException {
+        Utilisateur utilisateur = utilisateurRepository.findByIdentifiant(identifiant)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable"));
         return new CustomUserDetails(utilisateur);
     }

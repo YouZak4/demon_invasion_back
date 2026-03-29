@@ -1,7 +1,7 @@
 package com.demon_invasion.backend.config;
 
+import com.demon_invasion.backend.security.CustomUserDetailsService;
 import com.demon_invasion.backend.security.JwtFilter;
-import com.demon_invasion.backend.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -82,7 +82,7 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        var provider = new DaoAuthenticationProvider(userDetailsService);
+        var provider = new DaoAuthenticationProvider(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

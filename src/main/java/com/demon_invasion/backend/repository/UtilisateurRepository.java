@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
 
-    Optional<Utilisateur> findByIdentifiant(String identifiant);
-
     boolean existsByPseudo(String pseudo);
 
     Optional<Utilisateur> findByEmail(String email);
@@ -17,7 +15,7 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
     boolean existsByEmail(String email);
 
     @EntityGraph(attributePaths = "roles")
-    Optional<Utilisateur> findByPseudo(String pseudo);
+    Optional<Utilisateur> findByIdentifiant(String identifiant);
 }
 
 
