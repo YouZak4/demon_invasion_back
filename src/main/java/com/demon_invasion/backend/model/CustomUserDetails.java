@@ -31,7 +31,7 @@ public class CustomUserDetails implements UserDetails {
                 .filter(Objects::nonNull)
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .map(name -> new SimpleGrantedAuthority("ROLE_" + name))
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
