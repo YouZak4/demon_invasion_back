@@ -24,7 +24,7 @@ public class Utilisateur {
     @Column(unique = true, nullable = false)
     private String pseudo;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String identifiant;
 
     @Column(nullable = false)

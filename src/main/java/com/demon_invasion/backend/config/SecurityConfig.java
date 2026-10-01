@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))                // pas de session, on est full JWT
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()                       // login et register sont publics
+                        .requestMatchers("/auth/**", "/error").permitAll()                  // login et register sont publics
                         .anyRequest().authenticated()                                           // tout le reste nécessite un token
                 )
                 .authenticationProvider(authenticationProvider())

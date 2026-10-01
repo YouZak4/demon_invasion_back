@@ -64,6 +64,16 @@ public class UtilisateurService {
     }
 
     /**
+     * Vérifie si l'identifiant en paramètre existe en base de donnée.
+     *
+     * @param identifiant l'identifiant de connexion de l'utilisateur
+     * @return un boolean
+     */
+    public boolean existsByIdentifiant(String identifiant) {
+        return utilisateurRepository.existsByIdentifiant(identifiant);
+    }
+
+    /**
      * Permet de sauvegarder un utilisateur en base de donnée.
      *
      * @param utilisateur l'utilisateur à sauvegarder

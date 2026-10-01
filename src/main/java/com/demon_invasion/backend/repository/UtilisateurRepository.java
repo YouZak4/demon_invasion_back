@@ -14,6 +14,8 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 
     boolean existsByEmail(String email);
 
+    boolean existsByIdentifiant(String identifiant);
+
     @EntityGraph(attributePaths = "roles")
     Optional<Utilisateur> findByIdentifiant(String identifiant);
 }
