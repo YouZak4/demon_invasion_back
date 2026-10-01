@@ -61,6 +61,8 @@ public class AuthService {
     private int maxTentatives;
     @Value("${app.verification.delai-renvoi-secondes}")
     private long delaiRenvoiSecondes;
+    @Value("${app.verification.duree-vie-heures}")
+    private long dureeVieHeures;
 
     /**
      * Cette méthode permet à un utilisateur de créer son compte.
@@ -151,6 +153,8 @@ public class AuthService {
 
     private InscriptionEnAttente trouverParJeton(String jeton) {
         return inscriptionEnAttenteRepository.findByJeton(jeton)
+                // Trop ancienne : traitée comme déjà supprimée, sans attendre le prochain passage de NettoyageInscriptionService
+                .filter(attente -> attente.getDernierEnvoi().plusHours(dureeVieHeures).isAfter(LocalDateTime.now()))
                 .orElseThrow(() -> new InvalidVerificationCodeException(INSCRIPTION_INTROUVABLE));
     }
 
